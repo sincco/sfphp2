@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>sfphp2 by sincco</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>sfphp2</h1>
+        <h2>Framework de desarrollo en PHP</h2>
+        <a href="https://github.com/sincco/sfphp2" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h3>
+<a id="sfphp-2" class="anchor" href="#sfphp-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>sfphp 2</h3>
+
+<h2>
+<a id="simple-framework-for-php-v20" class="anchor" href="#simple-framework-for-php-v20" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Simple Framework (for) PHP v.2.0</h2>
+
+<p>Simplificando al máximo las características de todo framework para PHP, este permite ser un punto de entrada
+para quienes aún no están utilizando alguno, o desean entender cada elemento que componen uno.</p>
+
+<p>Haciendo uso de patrones singleton, carga de clases tipo Zend, y una implementación sencilla y propia de manejo
+de vistas, Sfphp, te puede ayudar a desarrollar una aplicación en un menor tiempo y organizando tus códigos
+de mejor manera.</p>
+
+<h3>
+<a id="uso" class="anchor" href="#uso" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Uso</h3>
+
+<p>Clona este repositorio, y ejecuta el script:</p>
+
+<pre><code>dominio.com/iniciar.php
+</code></pre>
+
+<p>Esto dejará una nueva estructura de directorios dónde comenzarás a alojar tu aplicación</p>
+
+<pre><code>App
+|-Core
+|-Controladores
+|-|-Inicio.php
+|-Modelos
+|-Vistas
+Etc
+|-Cache
+|-Config
+|-|-config.xml
+|-Logs
+|-Sesiones
+Libs
+</code></pre>
+
+<h5>
+<a id="o" class="anchor" href="#o" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>O</h5>
+
+<p>Clona el branch skeleton, con una app sencilla de ejemplo</p>
+
+<h2>
+<a id="configuracion" class="anchor" href="#configuracion" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuracion</h2>
+
+<h3>
+<a id="general-de-la-app" class="anchor" href="#general-de-la-app" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>General de la APP</h3>
+
+<pre><code>&lt;app&gt;
+    &lt;key&gt;la clave generada por el script iniciar.php o que puedes obtener desde el script llave.php&lt;/key&gt;
+    &lt;name&gt;nombre de la app&lt;/name&gt;
+    &lt;company&gt;sincco&lt;/company&gt;
+        &lt;cache&gt;segundos&lt;/cache&gt;
+        &lt;eemailapi&gt;API de ElasticMail&lt;/eemailapi&gt;
+&lt;/app&gt;
+</code></pre>
+
+<h3>
+<a id="front-end" class="anchor" href="#front-end" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Front end</h3>
+
+<pre><code>&lt;front&gt;
+    &lt;url&gt;http://tudominio.com/&lt;/url&gt;
+&lt;/front&gt;
+</code></pre>
+
+<h3>
+<a id="bases-de-datos" class="anchor" href="#bases-de-datos" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Bases de datos</h3>
+
+<p>Sólo puedes tener una por default (a la que se conectan todos los modelos por defecto), pero tantas como necesites con un identificador distinto</p>
+
+<pre><code>&lt;bases&gt;
+    &lt;default&gt;
+        &lt;host&gt;&lt;/host&gt;
+        &lt;user&gt;&lt;/user&gt;
+        &lt;password&gt;encriptado con la llave de la app, puedes usar en script encriptar.php?s=password&lt;/password&gt;
+        &lt;dbname&gt;&lt;/dbname&gt;
+        &lt;type&gt;firebird|mysql|sqlsrv|otro&lt;/type&gt;
+    &lt;/default&gt;
+&lt;/bases&gt;
+</code></pre>
+
+<h3>
+<a id="opciones-de-desarrollo" class="anchor" href="#opciones-de-desarrollo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Opciones de desarrollo</h3>
+
+<pre><code>&lt;dev&gt;
+    &lt;log&gt;1|0 activa el log del framework (en Etc/Logs)&lt;/log&gt;
+    &lt;showerrors&gt;1|0 muestra los errores propios del framework en pantalla&lt;/showerrors&gt;
+    &lt;showphperrors&gt;1|0 muestra los errores de php&lt;/showphperrors&gt;
+        &lt;querylog&gt;1|0 activa un log de querys ejecutados&lt;/querylog&gt;
+        &lt;contact&gt;correo de contacto para soporte&lt;/contact&gt;
+&lt;/dev&gt;
+</code></pre>
+
+<h3>
+<a id="cache" class="anchor" href="#cache" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Cache</h3>
+
+<p>Si la configuración lo especifica, se activa por default el cache para querys, que evita la petición excesiva a la BD.
+Estos archivos son vigentes durante los segundos indicados en la configuración y se depuran sobre las peticiones al sistema.
+Su depuración manual es eliminando los registros data_* del directorio Cache.
+Se incluye el script clear_cache, para eliminar toda la caché del sistema.</p>
+
+<h3>
+<a id="query-log" class="anchor" href="#query-log" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Query log</h3>
+
+<p>Dentro del directorio de Logs, se deja un archivo .sql con los querys que se ejecutan en los controladores de datos.</p>
+
+<h3>
+<a id="peticiones" class="anchor" href="#peticiones" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Peticiones</h3>
+
+<p>Cada petición se procesa seccionando la URL del siguiente modo:</p>
+
+<pre><code>dominio.com/[modulo]/controlador/accion/[(parametro1/valor1)...(parametron/valorn]
+</code></pre>
+
+<p>El controlador y accion por defecto son 'inicio', por lo que, al no recibirse dentro de la URL, estos son los que se ejecutarán de forma inmediata, así que deben existir dentro de tu estructura de archivos.</p>
+
+<h5>
+<a id="parametros-get" class="anchor" href="#parametros-get" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Parametros get</h5>
+
+<p>Los parametros se procesan de forma lineal, por lo que, si no llevan el orden correcto, no podrás encontrar el valor que necesitas. </p>
+
+<pre><code>.../fruta/manzana/color/rojo
+</code></pre>
+
+<p>Se traduce en el siguiente arreglo:</p>
+
+<pre><code>(['fruta'] =&gt; ['manzana']) ,
+(['color'] =&gt; ['rojo']) 
+</code></pre>
+
+<p>Mientras que, si se rompe el patrón:</p>
+
+<pre><code>.../fruta/color/rojo
+</code></pre>
+
+<p>se obtiene:</p>
+
+<pre><code>(['fruta'] =&gt; ['color']) ,
+(['rojo'] =&gt; NULL) 
+</code></pre>
+
+<h3>
+<a id="log-de-errores" class="anchor" href="#log-de-errores" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Log de errores</h3>
+
+<p>Ejecutando el script error_notification.php se envia un correo a la direccion configurada con el log actual de errores.</p>
+
+<h3>
+<a id="nginx" class="anchor" href="#nginx" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Nginx</h3>
+
+<p>Configuración básica para un vhost en Nginx</p>
+
+<pre><code>server {
+        listen       80;
+        listen       [::]:80;
+        server_name sitio;
+        index index.php;
+        client_max_body_size 2M;
+        root /var/www/html/sitio;
+        proxy_set_header    Host              $host;
+        proxy_set_header    X-Real-IP         $remote_addr;
+        proxy_set_header    X-Forwarded-For   $proxy_add_x_forwarded_for;
+
+        # Don't serve hidden files.
+        location ~ /\. {
+                deny all;
+        }
+
+        location = /favicon.ico {
+                log_not_found off;
+        }
+
+        location / {
+                try_files $uri /index.php?$args;
+        }
+
+        location ~ \.php$ {
+                fastcgi_pass unix:/var/run/php5-fpm.sock;
+                fastcgi_index index.php;
+                include fastcgi_params;
+
+                #Activar CACHE PHP
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                fastcgi_intercept_errors on;
+                fastcgi_ignore_client_abort off;
+                fastcgi_connect_timeout 60;
+                fastcgi_send_timeout 90;
+                fastcgi_read_timeout 90;
+                fastcgi_buffer_size 128k;
+                fastcgi_buffers 4 256k;
+                fastcgi_busy_buffers_size 256k;
+                fastcgi_cache CZONE;
+                fastcgi_cache_valid   200 302  1h;
+                fastcgi_cache_valid   301 1h;
+                fastcgi_cache_min_uses  2;
+        }
+
+        #Para Framewok de PHP
+        if (!-e $request_filename){
+                rewrite ^(.+)$ /index.php?url=$1 break;
+        }
+
+        error_log /var/www/__logs/error error;
+}
+</code></pre>
+
+<h4>
+<a id="notice-of-license" class="anchor" href="#notice-of-license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>NOTICE OF LICENSE</h4>
+
+<p>This source file is subject to the Open Software License (OSL 3.0) that is available through the world-wide-web at this URL:
+<a href="http://opensource.org/licenses/osl-3.0.php">http://opensource.org/licenses/osl-3.0.php</a></p>
+
+<p><strong>Happy coding!</strong></p>
+
+<ul>
+<li><a href="http://ivanmiranda.me">ivan miranda</a></li>
+</ul>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/sincco/sfphp2/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/sincco/sfphp2/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/sincco/sfphp2"></a> is maintained by <a href="https://github.com/sincco">sincco</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-12841217-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
