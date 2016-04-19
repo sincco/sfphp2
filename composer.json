@@ -1,0 +1,22 @@
+{
+    "name": "sincco/sfphp",
+    "type": "library",
+    "description": "sfphp es un framework para desarrollo en php",
+    "homepage": "https://github.com/sincco/sfphp2/wiki",
+    "license": [
+      "MIT",
+      "GPL-3.0"
+    ],
+    "authors": [
+        {
+            "name": "sincco",
+            "email": "contacto@sincco.com",
+            "homepage": "http://sincco.com"
+        }
+    ],
+    "extra": {
+        "branch-alias": {
+            "2.1": "2.1"
+        }
+    }
+}
