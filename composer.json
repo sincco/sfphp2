@@ -1,22 +1,21 @@
 {
     "name": "sincco/sfphp",
     "type": "library",
-    "description": "sfphp es un framework para desarrollo en php",
-    "homepage": "https://github.com/sincco/sfphp2/wiki",
-    "license": [
-      "MIT",
-      "GPL-3.0"
-    ],
+    "description": "PHP client for Celery task queue",
+    "keywords": ["sfphp", "sincco", "framework"],
+    "homepage": "https://github.com/sincco/sfphp2/",
+    "license": "BSD-2-Clause",
     "authors": [
         {
-            "name": "sincco",
-            "email": "contacto@sincco.com",
-            "homepage": "http://sincco.com"
+            "name": "SINCCO",
+            "email": "ivan.miranda@sincco.com",
+            "homepage": "http://sincco.com/",
+            "role": "Developer"
         }
     ],
     "extra": {
         "branch-alias": {
-            "2.1": "2.1"
+            "dev-master": "2.1"
         }
     }
 }
