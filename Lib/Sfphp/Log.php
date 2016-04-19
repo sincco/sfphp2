@@ -26,27 +26,45 @@
 #
 # -----------------------
 # @author: Iván Miranda
-# @version: 1.0.0
+# @version: 2.0.0
 # -----------------------
-# Ejecución del framework
+# Grabado de logs de la APP
 # -----------------------
 
-include('./_autoload.php');
+final class Sfphp_Log {
 
-# Namespaces
-# use Sfphp\Config\Reader as Cfg_Rdr;
-use Sfphp\Request\Input as Request;
+	# Registra un log
+	public static function set($data, $ext = "txt") {
+		$_file = "./Etc/Logs/".date('YW').".".$ext;
+		if($log_file = fopen($_file, 'a+')) {
+			$_data = print_r($data, TRUE);
+			fwrite($log_file, date("mdGis")."\r\n");
+			fwrite($log_file, $_data."\r\n");
+			fwrite($log_file,"URL: http://".$_SERVER['HTTP_HOST'].":".$_SERVER['SERVER_PORT'].$_SERVER['REQUEST_URI']."\r\n");
+			fwrite($log_file, "SESSION: "."\r\n-->id: ".session_id()."\r\n-->data: \r\n");
+			if(isset($_SESSION)) {
+				foreach ($_SESSION as $key => $value) {
+					if(!is_array($value))
+						fwrite($log_file, "-->-->{$key} = ".$value."\r\n");
+				}
+			}
+			fwrite($log_file, "IP: ".Sfphp::obtenIP()." - PHP ".phpversion()." - ".PHP_OS."(".PHP_SYSCONFDIR." ".PHP_BINARY.")\r\n");
+			fwrite($log_file,"--------------------------------------------\r\n");
+			fclose($log_file);
+		} else
+			echo "No se puede escribir el log ".$_file;
+	}
 
-var_dump(Request::get());
-
-
-# Carga de configuración de la app
-// require_once './Sfphp/_base.php';
-// # Inicia la app
-// try {
-// 	new Sfphp_Disparador;
-// } catch (Sfphp_Error $e) {
-// 	var_dump($e);
-// }
-
-# var_dump(cfgRdr::get('App'));
+	# Privada para registro de querys (si la configuración está activa)
+	public static function query($query) {
+		$_file = "./Etc/Logs/".date('YW').".sql";
+		if($log_file = fopen($_file, 'a+')) {
+			fwrite($log_file, date("mdGis")."\r\n");
+			fwrite($log_file,"URL: http://".$_SERVER['HTTP_HOST'].":".$_SERVER['SERVER_PORT'].$_SERVER['REQUEST_URI']."\r\n");
+			fwrite($log_file, $query."\r\n");
+			fwrite($log_file,"--------------------------------------------\r\n");
+			fclose($log_file);
+		} else
+			echo "No se puede escribir el log ".$_file;
+	}
+}

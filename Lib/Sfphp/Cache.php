@@ -28,25 +28,46 @@
 # @author: Iván Miranda
 # @version: 1.0.0
 # -----------------------
-# Ejecución del framework
+# Manejo de cache del sistema
 # -----------------------
 
-include('./_autoload.php');
+final class Sfphp_Cache {
 
-# Namespaces
-# use Sfphp\Config\Reader as Cfg_Rdr;
-use Sfphp\Request\Input as Request;
+	public function get($llave) {
+		$cache = self::loadCache($llave);
+		return $cache;
+	}
 
-var_dump(Request::get());
+	public function set($llave, $contenido) {
+		if(count($contenido))
+			self::writeCache($llave, $contenido);
+	}
 
+	public function clear() {
+		array_map('unlink', glob("./Etc/Cache/*"));
+	}
 
-# Carga de configuración de la app
-// require_once './Sfphp/_base.php';
-// # Inicia la app
-// try {
-// 	new Sfphp_Disparador;
-// } catch (Sfphp_Error $e) {
-// 	var_dump($e);
-// }
+	public function expirate() {
+		foreach (scandir("./Etc/Cache") as $archivo) {
+			if(!is_dir("./Etc/Cache/".$archivo)) {
+				$diferencia = time()-intval(filemtime("./Etc/Cache/".$archivo));
+				if($diferencia > APP_CACHE)
+					unlink("./Etc/Cache/".$archivo);
+			}
+		}
+	}
 
-# var_dump(cfgRdr::get('App'));
+	private function loadCache($llave) {
+		$cache = FALSE;
+		$archivo = "./Etc/Cache/".$llave;
+		if(file_exists($archivo))
+			$cache = json_decode(file_get_contents($archivo), TRUE);
+		return $cache;
+	}
+
+	private function writeCache($llave, $contenido) {
+		$archivo = "./Etc/Cache/".$llave;
+		file_put_contents($archivo, json_encode($contenido));
+	}
+
+}

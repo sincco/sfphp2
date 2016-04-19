@@ -28,25 +28,35 @@
 # @author: Iván Miranda
 # @version: 1.0.0
 # -----------------------
-# Ejecución del framework
+# Ejecución de eventos según la petición realizada desde el navegador
 # -----------------------
 
-include('./_autoload.php');
-
-# Namespaces
-# use Sfphp\Config\Reader as Cfg_Rdr;
-use Sfphp\Request\Input as Request;
-
-var_dump(Request::get());
-
-
-# Carga de configuración de la app
-// require_once './Sfphp/_base.php';
-// # Inicia la app
-// try {
-// 	new Sfphp_Disparador;
-// } catch (Sfphp_Error $e) {
-// 	var_dump($e);
-// }
-
-# var_dump(cfgRdr::get('App'));
+final class Sfphp_Disparador {
+	public function __construct() {
+		# Limpiar cache expirada
+		Sfphp_Cache::expirate();
+		# Aplicar la sesión
+		Sfphp_Sesion::get();
+		$peticion = Sfphp_Peticion::get();
+		$clase = NULL;
+		if(!is_null($peticion['_modulo']))
+			$clase = ucwords($peticion['_modulo'])."_";
+		$clase .= "Controladores_".ucwords($peticion['_control']);
+		try {
+			$objSeguridad = new Seguridad();
+			if($objSeguridad->validarAcceso(ucwords($peticion['_control']))) {
+				$objClase = new $clase();
+				if(is_callable(array($objClase, $peticion['_accion'])))
+					call_user_func(array($objClase, $peticion['_accion']));
+				else {
+					header("Location: ".BASE_URL."Etc/Errors/process.php?code=401");
+					die();
+				}
+			} else {
+				trigger_error("La accion {$peticion['_accion']} no esta definida en {$clase}", E_USER_ERROR);
+			}
+		} catch (Sfphp_Error $e) {
+			Sfphp_Log::error($e);
+		}
+	}
+}

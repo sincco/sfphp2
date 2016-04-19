@@ -28,25 +28,58 @@
 # @author: Iván Miranda
 # @version: 1.0.0
 # -----------------------
-# Ejecución del framework
+# Manejo de sesiones en base de datos
 # -----------------------
 
-include('./_autoload.php');
+final class Sfphp_SesionDB implements SessionHandlerInterface {
+    protected $_db;
 
-# Namespaces
-# use Sfphp\Config\Reader as Cfg_Rdr;
-use Sfphp\Request\Input as Request;
+    public function __construct() {
+        $this->_db = Sfphp_BaseDatos::get();
+    }
 
-var_dump(Request::get());
+    public function open($savePath, $sessionName) {
+        return true;
+    }
 
+    public function close() {
+        return true;
+    }
 
-# Carga de configuración de la app
-// require_once './Sfphp/_base.php';
-// # Inicia la app
-// try {
-// 	new Sfphp_Disparador;
-// } catch (Sfphp_Error $e) {
-// 	var_dump($e);
-// }
+    public function read($id) {
+    #Como todo esta codificado, se decodifca al leer la sesion
+        $resultados = $this->_db->query("SELECT data FROM __sesiones
+                    WHERE id = :id LIMIT 1;",array("id"=>$id));
+        if($resultados) {
+            return(string)@Sfphp::Decrypt($resultados[0]['data']);
+        }else {
+            return(String)@'';
+        }
+    }
 
-# var_dump(cfgRdr::get('App'));
+    public function write($id, $data) {
+    #Todo lo almacenado en la sesion se codifica para mayor seguridad
+        if(strlen(trim($data)) > 0) {
+            $consulta = "REPLACE INTO __sesiones
+                        SET id = :id, fecha = NOW(), data = :data;";
+            $valores = array("id"=>$id,"data"=>Sfphp::Encrypt($data));
+            return $this->_db->query($consulta, $valores);
+        }
+    }
+
+    public function destroy($id) {
+        $consulta = "DELETE FROM __sesiones
+                    WHERE id = :id;";
+        $valores = array("id"=>$id);
+        $this->_db->query($consulta, $valores);
+        session_regenerate_id();
+        return true;
+    }
+
+    public function gc($maxlifetime) {
+        $consulta = "DELETE FROM __sesiones
+                    WHERE fecha <= DATE_ADD(NOW(), INTERVAL -".($maxlifetime/60)." SECOND);";
+        $this->_db->query($consulta);
+        return true;
+    }
+}

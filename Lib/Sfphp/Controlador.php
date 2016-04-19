@@ -28,25 +28,57 @@
 # @author: Iván Miranda
 # @version: 1.0.0
 # -----------------------
-# Ejecución del framework
+# Clase abstracta para cualquier controlador en la aplicación
 # -----------------------
 
-include('./_autoload.php');
+abstract class Sfphp_Controlador {
+	protected $_vista;
+	protected $_modelo;
 
-# Namespaces
-# use Sfphp\Config\Reader as Cfg_Rdr;
-use Sfphp\Request\Input as Request;
+	abstract function inicio();
+	
+	# Cualquier instancia tiene el atributo de vista inicilizado
+	public function __construct() {
+		$this->_vista = new Sfphp_Vista();
+	}
+	# Metodo mágico para cargar elementos al controlador
+	public function __get($elemento) {
+	# Modelos
+		if("modelo" == substr($elemento,0,6)) {
+			$clase = "";
+			$_ultimo = array_pop(explode("_", str_replace("modelo", "", $elemento)));
+			foreach (explode("_", str_replace("modelo", "", $elemento)) as $_segmento) {
+				if($_segmento == $_ultimo)
+					$clase .= "Modelos_".$_segmento;
+				else
+					$clase .= $_segmento."_";
+			}
+			return new $clase();
+		}
+	# Vistas
+		if("vista" == substr($elemento,0,5)) {
+			$this->_vista->dibuja(substr($elemento,5));
+		}
+	# Atributos
+		if("get" == substr($elemento,0,3)) {
+			$elemento = $this->nombreAtributo($elemento);
+			return $this->$elemento;
+		}
+	}
 
-var_dump(Request::get());
+	# Activa el método mágico SET para cualquier elemento privado
+	public function __set($elemento, $valor) {
+		if("set" == substr($elemento,0,3)) {
+			$elemento = $this->nombreAtributo($elemento);
+			$this->$elemento = $valor;
+		}
+	}
 
-
-# Carga de configuración de la app
-// require_once './Sfphp/_base.php';
-// # Inicia la app
-// try {
-// 	new Sfphp_Disparador;
-// } catch (Sfphp_Error $e) {
-// 	var_dump($e);
-// }
-
-# var_dump(cfgRdr::get('App'));
+	# Nombre del atributo a usarse en los __get __set
+	private function nombreAtributo($atributo) {
+		$atributo = str_replace("(", "", $atributo);
+		$atributo = str_replace(")", "", $atributo);
+		$atributo = "_".strtolower(substr($atributo, 3));
+		return $atributo;
+	}
+}

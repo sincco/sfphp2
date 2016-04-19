@@ -28,25 +28,22 @@
 # @author: Iván Miranda
 # @version: 1.0.0
 # -----------------------
-# Ejecución del framework
-# -----------------------
+final class Sfphp_HTML {
 
-include('./_autoload.php');
-
-# Namespaces
-# use Sfphp\Config\Reader as Cfg_Rdr;
-use Sfphp\Request\Input as Request;
-
-var_dump(Request::get());
-
-
-# Carga de configuración de la app
-// require_once './Sfphp/_base.php';
-// # Inicia la app
-// try {
-// 	new Sfphp_Disparador;
-// } catch (Sfphp_Error $e) {
-// 	var_dump($e);
-// }
-
-# var_dump(cfgRdr::get('App'));
+	public static function DibujaTabla($datos) {
+		$html = "<table><tr>";
+		foreach (array_keys($datos[0]) as $key => $value) {
+		 	$html .= "<th>{$value}</th>";
+		}
+		$html .= "</tr>";
+		while ($registro = array_shift($datos)) {
+			$html .= "<tr>";
+			foreach ($registro as $key => $value) {
+				$html .= "<td>{$value}</td>";
+			}
+			$html .= "</tr>";
+		}
+		$html .= "</tr></table>";
+		echo $html;
+	}
+}

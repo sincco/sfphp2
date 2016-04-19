@@ -28,25 +28,17 @@
 # @author: Iván Miranda
 # @version: 1.0.0
 # -----------------------
-# Ejecución del framework
+# Funciones base para ejecutar el framework
 # -----------------------
 
-include('./_autoload.php');
-
-# Namespaces
-# use Sfphp\Config\Reader as Cfg_Rdr;
-use Sfphp\Request\Input as Request;
-
-var_dump(Request::get());
-
-
-# Carga de configuración de la app
-// require_once './Sfphp/_base.php';
-// # Inicia la app
-// try {
-// 	new Sfphp_Disparador;
-// } catch (Sfphp_Error $e) {
-// 	var_dump($e);
-// }
-
-# var_dump(cfgRdr::get('App'));
+function __autoload($_class) {
+	$_class = str_replace('\\', '/', $_class);
+	if(file_exists($_class . '.php')) {
+		require_once($_class . '.php');
+		return TRUE;
+	}
+	if(file_exists('Lib/' . $_class . '.php')) {
+		require_once('Lib/' . $_class . '.php');
+		return TRUE;
+	}
+}

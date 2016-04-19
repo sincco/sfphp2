@@ -28,25 +28,53 @@
 # @author: Iván Miranda
 # @version: 1.0.0
 # -----------------------
-# Ejecución del framework
+# Manejo de sesiones por archivo con datos encriptados
 # -----------------------
 
-include('./_autoload.php');
+final class Sfphp_SesionFile implements SessionHandlerInterface {
+    private $savePath;
 
-# Namespaces
-# use Sfphp\Config\Reader as Cfg_Rdr;
-use Sfphp\Request\Input as Request;
+    public function open($savePath, $sessionName) {
+        $this->savePath = $savePath;
+        #Si el directorio de control de sesiones no existe, se crea y se limita el listado desde servidor
+        if (!is_dir($this->savePath)) {
+            mkdir($this->savePath);
+            chmod($this->savePath, 0750);
+            file_put_contents("$this->savePath/.htaccess", "Options -Indexes");
+        }
+        return true;
+    }
 
-var_dump(Request::get());
+    public function close() {
+        return true;
+    }
 
+    public function read($id) {
+    #Como todo esta codificado, se decodifca al leer la sesion
+        return (string)@Sfphp::Decrypt(file_get_contents("$this->savePath/$id"));
+    }
 
-# Carga de configuración de la app
-// require_once './Sfphp/_base.php';
-// # Inicia la app
-// try {
-// 	new Sfphp_Disparador;
-// } catch (Sfphp_Error $e) {
-// 	var_dump($e);
-// }
+    public function write($id, $data) {
+    #Todo lo almacenado en la sesion se codifica para mayor seguridad
+        return file_put_contents("$this->savePath/$id", Sfphp::Encrypt($data)) === false ? false : true;
+    }
 
-# var_dump(cfgRdr::get('App'));
+    public function destroy($id) {
+        $_SESSION = array();
+        $file = "$this->savePath/$id";
+        if (file_exists($file)) {
+            unlink($file);
+            session_regenerate_id();
+        }
+        return true;
+    }
+
+    public function gc($maxlifetime) {
+        foreach (glob("$this->savePath/*") as $file) {
+            if (filemtime($file) + $maxlifetime < time() && file_exists($file)) {
+                unlink($file);
+            }
+        }
+        return true;
+    }
+}

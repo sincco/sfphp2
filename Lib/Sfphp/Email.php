@@ -28,25 +28,42 @@
 # @author: Iván Miranda
 # @version: 1.0.0
 # -----------------------
-# Ejecución del framework
+# Manejo de cache del sistema
 # -----------------------
 
-include('./_autoload.php');
-
-# Namespaces
-# use Sfphp\Config\Reader as Cfg_Rdr;
-use Sfphp\Request\Input as Request;
-
-var_dump(Request::get());
-
-
-# Carga de configuración de la app
-// require_once './Sfphp/_base.php';
-// # Inicia la app
-// try {
-// 	new Sfphp_Disparador;
-// } catch (Sfphp_Error $e) {
-// 	var_dump($e);
-// }
-
-# var_dump(cfgRdr::get('App'));
+final class Sfphp_Email 
+{
+	public function sendError($asunto, $contenidoTxt) {
+		$respuesta = "";
+		if(strlen(trim(APP_EEMAILAPI)) > 0) {
+			$para = DEV_CONTACT;
+			$de = strtolower(APP_NAME)."@sfphp.com";
+			$deNombre = APP_NAME;
+			$_data = "username=".urlencode(APP_EEMAILAPI);
+			$_data .= "&api_key=".urlencode(APP_EEMAILAPI);
+			$_data .= "&from=".urlencode($de);
+			$_data .= "&from_name=".urlencode($deNombre);
+			$_data .= "&to=".urlencode($para);
+			$_data .= "&subject=".urlencode($asunto);
+			if($contenidoTxt)
+			$_data .= "&body_text=".urlencode($contenidoTxt);
+			$_header = "POST /mailer/send HTTP/1.0\r\n";
+			$_header .= "Content-Type: application/x-www-form-urlencoded\r\n";
+			$_header .= "Content-Length: " . strlen($_data) . "\r\n\r\n";
+			$fp = fsockopen('ssl://api.elasticemail.com', 443, $errno, $errstr, 30);
+			if(!$fp)
+			return "ERROR. Could not open connection";
+			else {
+				fputs ($fp, $_header.$_data);
+				while (!feof($fp)) {
+					$respuesta .= fread ($fp, 1024);
+				}
+				fclose($fp);
+			}
+			return $respuesta;
+		} else {
+			trigger_error("La API de ElasticEmail no está configurada.", E_USER_ERROR);
+			return FALSE;
+		}
+	}
+}

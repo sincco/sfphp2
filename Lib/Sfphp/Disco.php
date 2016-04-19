@@ -28,25 +28,83 @@
 # @author: Iván Miranda
 # @version: 1.0.0
 # -----------------------
-# Ejecución del framework
+# Para manejo de archivos y directorios
 # -----------------------
 
-include('./_autoload.php');
+final class Sfphp_Disco {
 
-# Namespaces
-# use Sfphp\Config\Reader as Cfg_Rdr;
-use Sfphp\Request\Input as Request;
+#------------------------------------
+# Funciones de XML
+#------------------------------------
+	# Graba un XML desde un arreglo
+	public static function grabaXML ($arreglo, $root, $archivo) {
+		$_xml = new SimpleXMLElement("<?xml version=\"1.0\"?><".$root."></".$root.">");
+		self::array_to_xml($arreglo,$_xml);
+		return $_xml->asXML($archivo);
+	}
 
-var_dump(Request::get());
+	# Parsea el XML a un arreglo multidimensional
+	public static function XMLArreglo ($xml) {
+		$resp = array();
+		foreach ( (array) $xml as $indice => $nodo )
+			$resp[$indice] = ( is_object ( $nodo ) ) ? self::XMLArreglo($nodo) : $nodo;
+		return $resp;
+	}
 
+	public function arregloXML($array, $root) {
+		$_xml = new SimpleXMLElement("<?xml version=\"1.0\"?><".$root."></".$root.">");
+		foreach($array as $key => $value) {
+			if(is_array($value)) {
+				if(!is_numeric($key)){
+					$subnode = $_xml->addChild("$key");
+					self::array_to_xml($value, $subnode);
+				} else{
+					$subnode = $_xml->addChild("item$key");
+					self::array_to_xml($value, $subnode);
+				}
+			} else {
+				$_xml->addChild("$key",htmlspecialchars("$value"));
+			}
+		}
+		return $_xml;
+	}
 
-# Carga de configuración de la app
-// require_once './Sfphp/_base.php';
-// # Inicia la app
-// try {
-// 	new Sfphp_Disparador;
-// } catch (Sfphp_Error $e) {
-// 	var_dump($e);
-// }
+	private function array_to_xml($array, &$_xml) {
+		foreach($array as $key => $value) {
+			if(is_array($value)) {
+				if(!is_numeric($key)){
+					$subnode = $_xml->addChild("$key");
+					self::array_to_xml($value, $subnode);
+				} else{
+					$subnode = $_xml->addChild("item$key");
+					self::array_to_xml($value, $subnode);
+				}
+			} else {
+				$_xml->addChild("$key",htmlspecialchars("$value"));
+			}
+		}
+	}
 
-# var_dump(cfgRdr::get('App'));
+#------------------------------------
+# Calcula el hash de una archivo o directorio
+#------------------------------------
+	public static function MD5($directory) {
+		if (! is_dir($directory)) {
+			return md5_file($directory);
+		}
+		$files = array();
+		$dir = dir($directory);
+		while (false !== ($file = $dir->read())) {
+			if ($file != '.' and $file != '..') {
+				if (is_dir($directory . '/' . $file)) {
+					$files[] = self::MD5($directory . '/' . $file);
+				}
+				else {
+					$files[] = md5_file($directory . '/' . $file);
+				}
+			}
+		}
+		$dir->close();
+		return md5(implode('', $files));
+	}
+}

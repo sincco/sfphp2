@@ -26,27 +26,31 @@
 #
 # -----------------------
 # @author: Iván Miranda
-# @version: 1.0.0
+# @version: 1.0.1
 # -----------------------
-# Ejecución del framework
+# Clase abstracta para cualquier modelo en la aplicación, cualquier instancia derivada se conecta automaticamente a la BD
 # -----------------------
 
-include('./_autoload.php');
+abstract class Sfphp_Modelo {
+	protected $db;
+	protected $_campos = array();
+	
+	public function __construct() {
+	# Crear la conexion
+		$this->db = Sfphp_BaseDatos::get();
+	}
+	# Método básico para traer todos los registros siempre que el nombre del modelo
+	# corresponda con el nombre de la tabla
+	public function todos() {
+		$tabla = lcfirst(str_replace("Modelos_", "", get_class($this)));
+		return $this->db->query("SELECT * FROM ".$tabla.";");
+	}
 
-# Namespaces
-# use Sfphp\Config\Reader as Cfg_Rdr;
-use Sfphp\Request\Input as Request;
+	public function query($query, $valores = array()) {
+		return $this->db->query($query);
+	}
 
-var_dump(Request::get());
-
-
-# Carga de configuración de la app
-// require_once './Sfphp/_base.php';
-// # Inicia la app
-// try {
-// 	new Sfphp_Disparador;
-// } catch (Sfphp_Error $e) {
-// 	var_dump($e);
-// }
-
-# var_dump(cfgRdr::get('App'));
+	public function insert($query, $valores = array()) {
+		return $this->db->insert($query);
+	}
+}

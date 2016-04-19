@@ -28,25 +28,65 @@
 # @author: Iván Miranda
 # @version: 1.0.0
 # -----------------------
-# Ejecución del framework
+# Carga de configuración de la APP
 # -----------------------
 
-include('./_autoload.php');
+namespace Sfphp\Config;
 
-# Namespaces
-# use Sfphp\Config\Reader as Cfg_Rdr;
-use Sfphp\Request\Input as Request;
+final class Reader  {
 
-var_dump(Request::get());
+	private $config;
+	private static $instancia;
 
+	private function __construct() {
+		$local = "./Etc/Config/config_local.xml";
+		$file = "./Etc/Config/config.xml";
+		if(file_exists($local))
+			$file = $local;
+		if(!file_exists($file)) {
+			$this->config = array();
+			return false;
+		}
+		$_bases = array();
+		$_config = self::xml2array(new SimpleXMLElement(file_get_contents($file)));
+		if(!isset($_config["front"]["url"]))
+			$_config["front"]["url"] = self::url();
+		define("BASE_URL",$_config["front"]["url"]);
+		foreach ($_config["app"] as $key => $value)
+			define(strtoupper("app_".$key),$value);
+		foreach ($_config["dev"] as $key => $value)
+			define(strtoupper("dev_".$key),$value);
+		foreach ($_config["sesion"] as $key => $value)
+			define(strtoupper("sesion_".$key),$value);
+		$this->config = $_config;
+	}
 
-# Carga de configuración de la app
-// require_once './Sfphp/_base.php';
-// # Inicia la app
-// try {
-// 	new Sfphp_Disparador;
-// } catch (Sfphp_Error $e) {
-// 	var_dump($e);
-// }
+	public static function get($atributo = '') {
+		if(!self::$instancia instanceof self)
+			self::$instancia = new self();
+		if(strlen(trim($atributo))) {
+			if(isset($instancia->config[$atributo]))
+				return self::$instancia->config[$atributo];
+			else
+				return NULL;
+		}
+		else
+			return self::$instancia->config;
+	}
 
-# var_dump(cfgRdr::get('App'));
+	private function xml2array($xml) {
+		$resp = array();
+		foreach ( (array) $xml as $indice => $nodo )
+			$resp[$indice] = ( is_object ( $nodo ) ) ? self::xml2array($nodo) : $nodo;
+		return $resp;
+	}
+
+	private function url() {
+		return sprintf(
+			"%s://%s%s",
+			isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
+			$_SERVER['SERVER_NAME'],
+			$_SERVER['REQUEST_URI']
+		);
+	}
+}
